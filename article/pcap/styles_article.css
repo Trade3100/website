@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #121212;
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    color: #dfd6db;
+    font-weight: 400;
+    font-style: normal;
+  
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    color: #dfd6db;
+    
+}
+
+.logo {
+    height: 60px;
+    width: auto;
+    margin-top: 40px;
+    margin-left: 140px;
+}
+
+.navi {
+    text-decoration: none;
+    display: flex;
+    margin-right: 140px;
+    margin-top: 50px;
+}
+
+.navi a {
+    margin-right: 25px;
+    list-style-type: none;
+    font-size: 1em;
+    text-decoration: none;
+    padding: 25px 30px;
+    background-color: #121212;
+    color: #dfd6db;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    letter-spacing: 4px;
+    overflow: hidden;
+    transition: 0.5s;
+    cursor: pointer;
+}
+
+.navi a:hover {
+    background: #dfd6db;
+    color: #050801;
+    box-shadow: 0 0 5px #dfd6db,
+                0 0 10px #dfd6db,
+                0 0 20px #dfd6db,
+                0 0 70px #dfd6db;
+     -webkit-box-reflect:below 1px linear-gradient(transparent, #121212);
+}
+
+.article-main {
+    margin-right: 120px;
+    margin-left: 120px;
+}
+
+.introduction * {
+    padding-left: 150px;
+}
+
+.introduction h2 {
+    margin-top: 80px;
+    font-size: 2em;
+} 
+
+.introduction p {
+    margin-top: 7px;
+    font-size: 1.2em;
+}
+
+.introduction hr {
+    margin-right: 150px;
+    margin-left: 150px;
+}
+
+.top {
+    margin-top: 20px;
+}
+
+.content * {
+    margin-right: 150px;
+    margin-left: 150px;
+    text-align: justify;
+    margin-top: 10px;
+}
+
+.content p a {
+    padding: 0;
+    margin: 0;
+    color: #ffb347;
+}
+
+.content p span {
+    padding: 0;
+    margin: 0;
+}
+
+.content img {
+    width: 850px;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.content h3 {
+    font-size: 1.5em;
+    text-decoration: underline;
+}
