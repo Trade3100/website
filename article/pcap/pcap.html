@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Stylish Blog</title>
+    <link rel="stylesheet" href="styles_article.css">
+</head>
+
+<body>
+    <header>
+        <img class="logo" src="logo.png" alt="logo of the website" />
+        <nav>
+            <ul class="navi">
+                <a href="#" class="nav-link">HOME</a>
+                <a href="#" class="nav-link">ARTICLES</a>
+                <a href="#" class="nav-link">ABOUT</a>
+                <a href="#" class="nav-link nav-link-last">CONTACT</a>
+            </ul>
+        </nav>
+    </header>
+    <section class="article-main">
+        <dev class="introduction">
+            <h2>What's a PCAP file and how to make one</h2>
+            <p>Last Updated : 18, Nov 2024</p>
+            <hr>
+        </dev>
+        <dev class="content">
+            <p class="top">Click <a href="#interest">here</a> to skip to the interesting part.</p>
+            <p>
+                So this all started when I wanted to find a packet capture (PCAP) file of an STP negotiation and I had
+                to
+                jump through many hoops to find one to analyse with Wireshark. The lack of such a file or tools to
+                generate it frustrated me and got me interested in the file structure to hopefully understand it well
+                enough and maybe do something about this, be it minor, problem i had.</p>
+            <p>
+                Turns out, it’s a very simple file structure and I found a great resource to help me in my quest; I
+                stumbled upon this internet draft of the IETF’s Network Working Group.
+                First thing I did was generating a PCAP file through Wireshark with three packets :
+            </p>
+            <img src="pic1.png" alt="picture of Wireshark" />
+            <p>I exported it to the PCAP format and got ran it through a HEX editor :</p>
+            <img src="pic2.png" alt="picture of GHex" />
+            <p>Once that was done, I tried to find my 3 frames in all this :</p>
+            <img src="Hex1.png" alt="picture of GHex" />
+            <p>
+                Okay, so that was easy, only a few words to go through and understand; My thought process at first was
+                as
+                follows: this file must contain a header containing some information about the capture, so I isolated
+                the first bytes in separate file and tried to do some more research and that’s when I stumbled upon the
+                IETF’s draft, you can have more information about the header down below, but for the purposes of this
+                rant you just have to know that a PCAP header is 24 bytes long and in this case we have :
+            </p>
+            <p style="font-weight: bold; text-align: center; color: #ffb347;">
+                D4 C3 B2 A1 02 00 04 00 00 00 00 00 00 00 00 00 00 00 04 00 65 00 00 00
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">0xD4C3B2A1</span> : This sequence identifies that
+                packets’ timestamps are recorded in seconds and microseconds.
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">0x02000400</span> : Major and minor version of the
+                format. So in this case : Major version = 2, Minor version = 4.
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">0x0000000000000000</span> : Reserved, must be ignored.
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">0x00000400</span> : SnapLen; maximum number of bytes
+                captured from each packet. 1024 bytes in this case.
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">0x65000000</span> : LinkType and additional
+                information.
+            </p>
+            <p>
+                All I needed to figure out was the few bits before each packet capture and their meaning. The answer was
+                again found in that great article from the IETF.
+            </p>
+            <p>
+                Let’s take the first packet as an example and see what each bit in the packet record stands for :
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">0x5B063B67</span> : Timestamp (in seconds).
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">0x706F0000</span> : Timestamp (in micro-seconds
+                [remember the Magic Sequence]).
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">0x71000000</span> : Captured Packet Length.
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">0x71000000</span> : Original Packet Length.
+            </p>
+            <p>
+                And that was today's story, hope you found the process interesting. Now let’s explain the PCAP file in a
+                more rigorous way.
+            </p>
+            <h3 id="interest">What is a PCAP file ?</h3>
+            <p>
+                Packet CAPture files are a common way to store network traffic, it stores every byte of every packet
+                seen by your NIC or in a network in general.
+            </p>
+            <p>
+                PCAP files are easily created and read by a variety of tools, the most famous of which is Wireshark.
+            </p>
+            <p>
+                PCAP files offer a standardized and structured way to store captured traffic, making it easier to
+                transport, filter and examine.
+            </p>
+            <h3>PCAP file format</h3>
+            <p>
+                All PCAP file start with a header that has the following structure :
+            </p>
+            <img src="header.png" alt="header of a PCAP file" />
+            <p>
+                So what does each field mean? Well, it is simple :
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">Magic Number</span> : It can be assigned two value :
+                0xA1B2C3D4 to signify that the packet timestamps will be recorded in seconds and microseconds OR
+                0xA1B2C34D to signify that the packet timestamps will be recorded in seconds and nanoseconds.
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">Major Version & Minor Version</span> : Specifies the
+                version of the format used in the file, it is useful for identifying compatibility issues.
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">Reserved1 & Reserved1</span> : Should not be used and
+                should be filled by 0s by the PCAP writer.
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">SnapLen</span> : Specifies the Maximum number of bytes
+                captured from each packet. Any excess will not be stored in the file.
+            </p>
+            <p>
+                <span style="font-weight: bold; color: #ffb347;">LinkType & Additional information</span> : identifies
+                the link-layer type of the packet and could contain additional information.
+            </p>
+        </dev>
+    </section>
+</body>
